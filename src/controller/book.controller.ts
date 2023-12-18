@@ -2,6 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import { queryList } from '../db/dbQuery';
 import { dbQuery } from '../db/connection';
 import { QueryResult } from '../util/QueryResult';
+import loggerService from '../services/logger-service';
+import { prepareAudit } from '../audit/audit-service';
+import { actionList } from '../audit/audit-action';
+
+const logger = new loggerService('book-controller');
 
 export const getBookList = async (
   req: Request,
@@ -11,8 +16,9 @@ export const getBookList = async (
   try {
     var getQuery = new queryList();
     var bookListQuery = getQuery.GET_BOOK_LIST_QUERY;
-    var result = (await dbQuery(bookListQuery)) as QueryResult;
 
+    var result = (await dbQuery(bookListQuery)) as QueryResult;
+    logger.info('return Book list', result.rows);
     return res.status(200).send(JSON.stringify(result.rows));
   } catch (error) {
     console.log('Error' + error);
@@ -32,6 +38,7 @@ export const getDetailsList = async (
     var result = (await dbQuery(bookDetailsQuery, [bookId])) as QueryResult;
     return res.status(200).send(JSON.stringify(result.rows[0]));
   } catch (error) {
+    logger.error('Failed to get Book details ', JSON.stringify(error));
     console.log('Error' + error);
     return res.status(500).send({ error: 'Failed to list book' });
   }
@@ -120,7 +127,7 @@ export const updateBook = async (
       storeCode,
       createdOn,
       createdBy,
-      bookId
+      bookId,
     ];
     var updateBookQuery = saveQuery.UPDATE_STORE_QUERY;
     //await to execute database query
