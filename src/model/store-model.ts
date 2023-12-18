@@ -1,6 +1,6 @@
 export interface Store {
-  storeId: Number;
-  storeName: String;
-  storeCode: String;
-  address: String;
+  storeId: number;
+  storeName: string;
+  storeCode: string;
+  address: string;
 }

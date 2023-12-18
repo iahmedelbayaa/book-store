@@ -1,8 +1,8 @@
 export interface book {
-  bookId: Number;
-  title: String;
-  isbn: String;
-  description: String;
-  author: Number;
-  pages: Number;
+  bookId: number;
+  title: string;
+  isbn: string;
+  description: string;
+  author: number;
+  pages: number;
 }
