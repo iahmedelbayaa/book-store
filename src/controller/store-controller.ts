@@ -11,7 +11,7 @@ export const getStoreList = async (
   try {
     var getQuery = new queryList();
     var storeListQuery = getQuery.GET_STORE_LIST_QUERY;
-    var result = (await dbQuery(storeListQuery)) as QueryResult;
+    var result : any = await dbQuery(storeListQuery);
 
     return res.status(200).send(JSON.stringify(result.rows));
   } catch (error) {

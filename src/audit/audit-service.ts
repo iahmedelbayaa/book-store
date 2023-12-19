@@ -3,25 +3,24 @@ import { Audit } from '../model/audit-model';
 import { queryList } from '../db/dbQuery';
 import { dbQuery } from '../db/connection';
 
-
-// create event 
+// create event
 const emitter = new events.EventEmitter();
 
 const auditEvent = 'audit';
-// event effect 
-emitter.on(auditEvent, (audit: Audit) => {
-  console.log('Audit Event Emitter - Audit : ' + JSON.stringify(audit));
+// event effect
+emitter.on(auditEvent, (Audit) => {
+  // console.log('Audit Event Emitter - Audit : ' + JSON.stringify(Audit));
   try {
-
     //make values with specific type
-    const values: (string | number)[] = [
-      audit.auditAction,
-      JSON.stringify(audit.data),
-      audit.status,
-      audit.error,
-      audit.auditBy,
-      audit.auditOn,
+    const values: any[] = [
+      Audit.auditAction,
+      JSON.stringify(Audit.data),
+      Audit.status,
+      Audit.error,
+      Audit.auditBy,
+      Audit.auditOn,
     ];
+
     var getQuery = new queryList();
     var auditQuery = getQuery.AUDIT_QUERY;
     dbQuery(auditQuery, values);
@@ -33,21 +32,14 @@ emitter.on(auditEvent, (audit: Audit) => {
 export function prepareAudit(
   auditAction: string,
   data: any,
-  error: string,
+  error: any,
   auditBy: string,
   auditOn: string
 ) {
   let status = 200;
   if (error) status = 500;
 
-  const auditObj: Audit = {
-    auditAction,
-    data,
-    status,
-    error,
-    auditBy,
-    auditOn,
-  };
+  var auditObj = new Audit(auditAction, data, status, error, auditBy, auditOn);
 
   emitter.emit(auditEvent, auditObj);
 }

@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { queryList } from '../db/dbQuery';
 import { dbQuery } from '../db/connection';
-import { QueryResult } from '../util/QueryResult';
 import loggerService from '../services/logger-service';
 import { prepareAudit } from '../audit/audit-service';
 import { actionList } from '../audit/audit-action';
 import { dateFormat } from '../util/utility';
 import { APIError } from '../error/api-error';
 import { HttpStatusCode } from '../error/error-status';
+import { ErrorType } from '../error/error-type';
+
 
 const logger = new loggerService('book-controller');
 
@@ -16,28 +17,29 @@ export const getBookList = async (
   res: Response,
   next: NextFunction
 ) => {
-  let result: QueryResult | null = null;
+  
   const auditOn = dateFormat();
   const getQuery = new queryList();
   const bookListQuery = getQuery.GET_BOOK_LIST_QUERY;
 
   try {
-    result = (await dbQuery(bookListQuery)) as QueryResult;
+    console.log('bookListQuery:', bookListQuery);
+    var result: any = await dbQuery(bookListQuery);
     logger.info('return Book list', result.rows);
     prepareAudit(
       actionList.GET_BOOK_LIST,
-      result.rows,
-      '',
+      {data: result.rows},
+      null,
       'postman',
       auditOn
     );
-    return res.status(200).send(JSON.stringify(result.rows));
+    return res.status(200).json(result.rows);
   } catch (error : any) {
     console.error('Error', error);
     prepareAudit(
       actionList.GET_BOOK_LIST,
-      result ? result.rows : null,
-      error.message,
+       {data :result.rows} ,
+      {data :error.message},
       'postman',
       auditOn
     );
@@ -51,11 +53,13 @@ export const getDetailsList = async (
   next: NextFunction
 ) => {
   try {
-    var bookId = req.params.bookId;
+    var bookId = parseInt(req.params.bookId);
+    // console.log("book Id :"+bookId);
+    
     // validate not empty
-    if (!(bookId)) {
+    if (bookId === null  || isNaN(bookId)) {
       throw new APIError(
-        'Invalid bookId , is not a number',
+        ErrorType.API_ERROR,
         HttpStatusCode.INTERNAL_SERVER,
         'Invalid BookId , is not a number , bookId is :' + bookId,
         true
@@ -63,11 +67,12 @@ export const getDetailsList = async (
     }
     var getQuery = new queryList();
     var bookDetailsQuery = getQuery.GET_BOOK_DETAILS_QUERY;
-    var result = (await dbQuery(bookDetailsQuery, [bookId])) as QueryResult;
-    if (result.rows.length === 0) {
+    var result: any = await dbQuery(bookDetailsQuery, [bookId]);
+    var book = result.rows[0];
+    if (! book ) {
       return res.status(404).send({ error: 'Book not found' });
     }
-    return res.status(200).send(JSON.stringify(result.rows[0]));
+    return res.status(200).json(book);
   } catch (error) {
     logger.error('Failed to get Book details ', JSON.stringify(error));
     console.log('Error' + error);
@@ -101,7 +106,7 @@ export const saveBook = async (
     //get new class
     var saveQuery = new queryList();
     // params
-    var values: (number | string)[] = [
+    var values: any  = [
       title,
       description,
       author,
@@ -149,7 +154,7 @@ export const updateBook = async (
     //get new class
     var saveQuery = new queryList();
     // params
-    var values: any[] = [
+    var values: any = [
       title,
       description,
       author,

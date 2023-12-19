@@ -10,20 +10,24 @@ const dataFormate = () => {
 
 class loggerService {
   route;
-  logger: any;
+  logger;
   constructor(route: any) {
     this.route = route;
     const logger = winston.createLogger({
       level: 'info',
-      format: winston.format.printf((info) => {
-        return `${dataFormate()} | ${info.level.toUpperCase()} | ${
-          this.route
-        } | ${info.message} | ${JSON.stringify(info.meta)}`;
+      format: winston.format.printf(info => {
+         let message = `${dataFormate()} |  ${info.level.toUpperCase()} | ${
+           info.message
+         } | `;
+         message = info.obj
+           ? message + `data ${JSON.stringify(info.obj)} | `
+           : message;
+         return message;
       }),
       transports: [
         new winston.transports.Console(),
         new winston.transports.File({
-          filename: `${process.env.LOG_FILE_PATH} / ${route}.log`,
+          filename: `${process.env.LOG_FILE_PATH} / ${route}.log`
         }),
       ],
     });
@@ -47,9 +51,9 @@ class loggerService {
 
   async error(message: string, obj?: any) {
     if (obj) {
-      this.logger.log('error', message, { obj });
-    } else {
       this.logger.log('error', message);
+    } else {
+      this.logger.log('error', message, { obj });
     }
   }
   async debug(message: string, obj?: any) {
