@@ -5,6 +5,7 @@ import { QueryResult } from '../util/QueryResult';
 import loggerService from '../services/logger-service';
 import { prepareAudit } from '../audit/audit-service';
 import { actionList } from '../audit/audit-action';
+import { dateFormat } from '../util/utility';
 
 const logger = new loggerService('book-controller');
 
@@ -13,15 +14,31 @@ export const getBookList = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    var getQuery = new queryList();
-    var bookListQuery = getQuery.GET_BOOK_LIST_QUERY;
+  let result: QueryResult | null = null;
+  const auditOn = dateFormat();
+  const getQuery = new queryList();
+  const bookListQuery = getQuery.GET_BOOK_LIST_QUERY;
 
-    var result = (await dbQuery(bookListQuery)) as QueryResult;
+  try {
+    result = (await dbQuery(bookListQuery)) as QueryResult;
     logger.info('return Book list', result.rows);
+    prepareAudit(
+      actionList.GET_BOOK_LIST,
+      result.rows,
+      '',
+      'postman',
+      auditOn
+    );
     return res.status(200).send(JSON.stringify(result.rows));
-  } catch (error) {
-    console.log('Error' + error);
+  } catch (error : any) {
+    console.error('Error', error);
+    prepareAudit(
+      actionList.GET_BOOK_LIST,
+      result ? result.rows : null,
+      error.message,
+      'postman',
+      auditOn
+    );
     return res.status(500).send({ error: 'Failed to list book' });
   }
 };
