@@ -27,7 +27,7 @@ export const saveStore = async (
 ) => {
   try {
     var createdBy = 'admin';
-    var createdOn = Date.now();
+    var createdOn = new Date(Date.now()).toISOString();
     //req body
     var storeName = req.body.storeName;
     var storeCode = req.body.storeCode;

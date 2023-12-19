@@ -6,6 +6,8 @@ import loggerService from '../services/logger-service';
 import { prepareAudit } from '../audit/audit-service';
 import { actionList } from '../audit/audit-action';
 import { dateFormat } from '../util/utility';
+import { APIError } from '../error/api-error';
+import { HttpStatusCode } from '../error/error-status';
 
 const logger = new loggerService('book-controller');
 
@@ -50,9 +52,21 @@ export const getDetailsList = async (
 ) => {
   try {
     var bookId = req.params.bookId;
+    // validate not empty
+    if (!(bookId)) {
+      throw new APIError(
+        'Invalid bookId , is not a number',
+        HttpStatusCode.INTERNAL_SERVER,
+        'Invalid BookId , is not a number , bookId is :' + bookId,
+        true
+      );
+    }
     var getQuery = new queryList();
     var bookDetailsQuery = getQuery.GET_BOOK_DETAILS_QUERY;
     var result = (await dbQuery(bookDetailsQuery, [bookId])) as QueryResult;
+    if (result.rows.length === 0) {
+      return res.status(404).send({ error: 'Book not found' });
+    }
     return res.status(200).send(JSON.stringify(result.rows[0]));
   } catch (error) {
     logger.error('Failed to get Book details ', JSON.stringify(error));
@@ -68,17 +82,17 @@ export const saveBook = async (
 ) => {
   try {
     var createdBy = 'admin';
-    var createdOn = Date.now();
+    var createdOn = new Date(Date.now()).toISOString();
     //req body
     var title = req.body.title;
     var description = req.body.description;
     var author = req.body.author;
     var publisher = req.body.publisher;
     var pages = req.body.pages;
-    var storeCode = req.body.bookName;
+    var storeCode = req.body.storeCode;
     //check if is empty
     if (!title || !author || !publisher || !storeCode) {
-      return res.status(501).send({
+      return res.status(500).send({
         error:
           'title , author , publisher , storeCode are required , can not empty ',
       });
@@ -87,17 +101,17 @@ export const saveBook = async (
     //get new class
     var saveQuery = new queryList();
     // params
-    var values: any[] = [
+    var values: (number | string)[] = [
       title,
       description,
       author,
       publisher,
       pages,
       storeCode,
-      createdOn,
       createdBy,
+      createdOn,
     ];
-    var SaveBookQuery = saveQuery.SAVE_STORE_QUERY;
+    var SaveBookQuery = saveQuery.SAVE_BOOK_QUERY;
     //await to execute database query
     await dbQuery(SaveBookQuery, values);
 
