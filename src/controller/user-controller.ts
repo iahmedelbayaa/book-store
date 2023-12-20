@@ -6,10 +6,7 @@ import { prepareAudit } from '../audit/audit-service';
 import { actionList } from '../audit/audit-action';
 import { dateFormat } from '../util/utility';
 import * as validationUtil from '../util/validation';
-import { APIError } from '../error/api-error';
-import { HttpStatusCode } from '../error/error-status';
-import { ErrorType } from '../error/error-type';
-var bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
 
 const logger = new loggerService('user-controller');
 
