@@ -50,15 +50,15 @@ export const saveUser = async (
   next: NextFunction
 ) => {
   try {
-    var createdBy = 'admin';
-    var createdOn = new Date(Date.now()).toISOString();
+    const createdBy = 'admin';
+    const createdOn = new Date(Date.now()).toISOString();
     //req body
-    var username = req.body.username;
-    var password = req.body.password;
-    var email = req.body.email;
-    var fullName = req.body.fullName;
-    var userTypeCode = req.body.userTypeCode;
-    var groups = req.body.groups;
+    const username = req.body.username;
+    const password = req.body.password;
+    const email = req.body.email;
+    const fullName = req.body.fullName;
+    const userTypeCode = req.body.userTypeCode;
+    const groups = req.body.groups;
 
     //check if is empty
     if (
@@ -74,8 +74,8 @@ export const saveUser = async (
           'username , password , email , fullName, userTypeCode , groups are required , can not empty ',
       });
     }
-    var saveQuery = new queryList();
-    var isUserExistQuery = saveQuery.IS_USER_EXIST_QUERY;
+    const saveQuery = new queryList();
+    const isUserExistQuery = saveQuery.IS_USER_EXIST_QUERY;
     let result : any  =await dbQuery(isUserExistQuery, [username, email]);
     if (result.rows[0].count != '0') {
       return res.status(500).send({ error: 'User already Exists' });
@@ -89,7 +89,7 @@ export const saveUser = async (
     }
     let hashedPassword = await bcrypt.hash(password, 10);
     // params
-    var values: any = [
+    const values: any = [
       username,
       hashedPassword,
       email,

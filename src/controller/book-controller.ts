@@ -53,7 +53,7 @@ export const getDetailsList = async (
   next: NextFunction
 ) => {
   try {
-    var bookId = parseInt(req.params.bookId);
+    const bookId = parseInt(req.params.bookId);
     // console.log("book Id :"+bookId);
     
     // validate not empty
@@ -65,10 +65,10 @@ export const getDetailsList = async (
         true
       );
     }
-    var getQuery = new queryList();
-    var bookDetailsQuery = getQuery.GET_BOOK_DETAILS_QUERY;
-    var result: any = await dbQuery(bookDetailsQuery, [bookId]);
-    var book = result.rows[0];
+    const getQuery = new queryList();
+    const bookDetailsQuery = getQuery.GET_BOOK_DETAILS_QUERY;
+    const result: any = await dbQuery(bookDetailsQuery, [bookId]);
+    const book = result.rows[0];
     if (! book ) {
       return res.status(404).send({ error: 'Book not found' });
     }
@@ -86,15 +86,15 @@ export const saveBook = async (
   next: NextFunction
 ) => {
   try {
-    var createdBy = 'admin';
-    var createdOn = new Date(Date.now()).toISOString();
+    const createdBy = 'admin';
+    const createdOn = new Date(Date.now()).toISOString();
     //req body
-    var title = req.body.title;
-    var description = req.body.description;
-    var author = req.body.author;
-    var publisher = req.body.publisher;
-    var pages = req.body.pages;
-    var storeCode = req.body.storeCode;
+    const title = req.body.title;
+    const description = req.body.description;
+    const author = req.body.author;
+    const publisher = req.body.publisher;
+    const pages = req.body.pages;
+    const storeCode = req.body.storeCode;
     //check if is empty
     if (!title || !author || !publisher || !storeCode) {
       return res.status(500).send({
@@ -104,9 +104,9 @@ export const saveBook = async (
     }
 
     //get new class
-    var saveQuery = new queryList();
+    const saveQuery = new queryList();
     // params
-    var values: any  = [
+    const values: any  = [
       title,
       description,
       author,
@@ -116,7 +116,7 @@ export const saveBook = async (
       createdBy,
       createdOn,
     ];
-    var SaveBookQuery = saveQuery.SAVE_BOOK_QUERY;
+    const SaveBookQuery = saveQuery.SAVE_BOOK_QUERY;
     //await to execute database query
     await dbQuery(SaveBookQuery, values);
 
@@ -133,16 +133,16 @@ export const updateBook = async (
   next: NextFunction
 ) => {
   try {
-    var createdBy = 'admin';
-    var createdOn = Date.now();
+    const createdBy = 'admin';
+    const createdOn = Date.now();
     //req body
-    var bookId = req.body.bookId;
-    var title = req.body.title;
-    var description = req.body.description;
-    var author = req.body.author;
-    var publisher = req.body.publisher;
-    var pages = req.body.pages;
-    var storeCode = req.body.bookName;
+    const bookId = req.body.bookId;
+    const title = req.body.title;
+    const description = req.body.description;
+    const author = req.body.author;
+    const publisher = req.body.publisher;
+    const pages = req.body.pages;
+    const storeCode = req.body.bookName;
     //check if is empty
     if (!bookId || !title || !author || !publisher || !storeCode) {
       return res.status(501).send({
@@ -152,9 +152,9 @@ export const updateBook = async (
     }
 
     //get new class
-    var saveQuery = new queryList();
+    const saveQuery = new queryList();
     // params
-    var values: any = [
+    const values: any = [
       title,
       description,
       author,
@@ -165,7 +165,7 @@ export const updateBook = async (
       createdBy,
       bookId,
     ];
-    var updateBookQuery = saveQuery.UPDATE_STORE_QUERY;
+    const updateBookQuery = saveQuery.UPDATE_STORE_QUERY;
     //await to execute database query
     await dbQuery(updateBookQuery, values);
 
@@ -181,15 +181,15 @@ export const deleteBook = async (
   res: Response,
   next: NextFunction
 ) => {
-  var bookId = req.params.bookId;
+  const bookId = req.params.bookId;
 
   try {
     // validate not empty
     if (!bookId) {
       return res.status(500).send({ error: 'can not delete empty bookId' });
     }
-    var deleteQuery = new queryList();
-    var deleteBookQuery = deleteQuery.DELETE_BOOK_QUERY;
+    const deleteQuery = new queryList();
+    const deleteBookQuery = deleteQuery.DELETE_BOOK_QUERY;
     await dbQuery(deleteBookQuery, [bookId]);
 
     return res.status(200).send('Successfully book deleted ');

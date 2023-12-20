@@ -21,8 +21,8 @@ emitter.on(auditEvent, (Audit) => {
       Audit.auditOn,
     ];
 
-    let getQuery = new queryList();
-    let auditQuery = getQuery.AUDIT_QUERY;
+    const getQuery = new queryList();
+    const auditQuery = getQuery.AUDIT_QUERY;
     dbQuery(auditQuery, values);
   } catch (error) {
     console.log('Audit Event Emitter - error : ' + error);
@@ -39,7 +39,7 @@ export function prepareAudit(
   let status = 200;
   if (error) status = 500;
 
-  let auditObj = new Audit(auditAction, data, status, error, auditBy, auditOn);
+  const auditObj = new Audit(auditAction, data, status, error, auditBy, auditOn);
 
   emitter.emit(auditEvent, auditObj);
 }

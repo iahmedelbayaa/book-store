@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { queryList } from '../db/dbQuery';
 import { dbQuery } from '../db/connection';
-import { QueryResult } from '../util/QueryResult';
 
 export const getStoreList = async (
   req: Request,
@@ -9,9 +8,9 @@ export const getStoreList = async (
   next: NextFunction
 ) => {
   try {
-    var getQuery = new queryList();
-    var storeListQuery = getQuery.GET_STORE_LIST_QUERY;
-    var result : any = await dbQuery(storeListQuery);
+    const getQuery = new queryList();
+    const storeListQuery = getQuery.GET_STORE_LIST_QUERY;
+    const result : any = await dbQuery(storeListQuery);
 
     return res.status(200).send(JSON.stringify(result.rows));
   } catch (error) {
@@ -26,22 +25,22 @@ export const saveStore = async (
   next: NextFunction
 ) => {
   try {
-    var createdBy = 'admin';
-    var createdOn = new Date(Date.now()).toISOString();
+    const createdBy = 'admin';
+    const createdOn = new Date(Date.now()).toISOString();
     //req body
-    var storeName = req.body.storeName;
-    var storeCode = req.body.storeCode;
-    var address = req.body.address;
+    const storeName = req.body.storeName;
+    const storeCode = req.body.storeCode;
+    const address = req.body.address;
     //check if is empty
     if (!storeName || !address) {
       return res.status(501).send({ error: 'empty' });
     }
 
     //get new class
-    var saveQuery = new queryList();
+    const saveQuery = new queryList();
     // params
-    var values: any[] = [storeName, storeCode, address, createdOn, createdBy];
-    var SaveStoreQuery = saveQuery.SAVE_STORE_QUERY;
+    const values: any[] = [storeName, storeCode, address, createdOn, createdBy];
+    const SaveStoreQuery = saveQuery.SAVE_STORE_QUERY;
     //await to execute database query
     await dbQuery(SaveStoreQuery, values);
 
