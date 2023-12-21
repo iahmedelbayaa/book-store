@@ -56,18 +56,18 @@ export const saveUser = async (
     const username = req.body.username;
     const password = req.body.password;
     const email = req.body.email;
-    const fullName = req.body.fullName;
-    const userTypeCode = req.body.userTypeCode;
-    const groups = req.body.groups;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const role = req.body.role
 
     //check if is empty
     if (
       !username ||
       !password ||
       !email ||
-      !fullName ||
-      !userTypeCode ||
-      !groups
+      !firstName ||
+      !lastName ||
+      !role
     ) {
       return res.status(500).send({
         error:
@@ -93,8 +93,9 @@ export const saveUser = async (
       username,
       hashedPassword,
       email,
-      fullName,
-      userTypeCode,
+      firstName,
+      lastName,
+      role,
       createdOn,
       createdBy,
     ];  

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import logInRouter from './router/login-router'
 import noteRouter from './router/note-router';
 import storeRouter from './router/store-router';
 import userRouter from './router/user-router';
@@ -28,6 +29,7 @@ app.use('/api/v1', noteRouter);
 app.use('/api/v1', storeRouter);
 app.use('/api/v1', bookRouter)
 app.use('/api/v1', userRouter);
+app.use('/api/v1', logInRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
