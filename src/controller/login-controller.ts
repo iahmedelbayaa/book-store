@@ -8,16 +8,20 @@ import { dateFormat } from '../util/utility';
 import * as validationUtil from '../util/validation';
 import bcrypt from 'bcryptjs';
 import * as jwtUtil from '../util/jwtUtil';
+import User from '../model/user-model';
+import { isValidPassword } from '../util/validation';
 
 
 const logger = new loggerService('login-controller');
 
-export const getUserProfile = async (req: Request, res: Response) => {
-const authenticatedUser = req.authenticatedUser;  try {
+export const getUserProfile = async (req: Request, res: Response , next:NextFunction) => {
+  const authenticatedUser = req.authenticatedUser;
+  try {
     return res.status(200).json(authenticatedUser);
-  } catch (err) {
-    console.error('Error : ' + err);
-    return res.status(500).json({ error: 'Failed to get user' });
+  } catch (error) {
+    console.error('Error : ' + error);
+      return next(error);
+
   }
 };
 
@@ -34,26 +38,31 @@ export const signIn = async (
        *  4- get user roles
        *  5- generate token
        */
-      const { username, password } = req.params;
-      if (!username || !password) {
-        return res.status(400).json({ error: 'Missing username or password' });
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Missing email or password' });
       }
       const getQuery = new queryList();
       const signInQuery = getQuery.SIGN_IN_QUERY;
-      const result: any = await dbQuery(signInQuery, [username]);
-      let dbResponse = result.rows[0];
+      console.log('before = ' );
+      const result: any = await dbQuery(signInQuery, [email]);
+      console.log('result = ' + result);
+      
+      let dbResponse : User= result.rows[0];
       if (!result.rows.length) {
-        logger.info('user : [' + username + '] not Exists in database');
+        logger.info('user : [' + email + '] not Exists in database');
 
         //401 unauthorized
         return res.status(401).json({ error: 'Invalid username or password' });
       }
-      let isPasswordValid = validationUtil.comparePassword(
-        password,
-        dbResponse.password
-      );
-      if (!isPasswordValid) {
-        logger.info('user : [' + username + '] password is invalid');
+      // let isPasswordValid = validationUtil.comparePassword(
+      //   password,
+      //   dbResponse.password!!
+      // );
+
+      let isValidPassword = password === dbResponse.password ? true : false;
+      if (!isValidPassword) {
+        logger.info('user : [' + email + '] password is invalid');
         return res.status(401).json({ error: 'Invalid username or password' });
       }
 
@@ -62,13 +71,13 @@ export const signIn = async (
       // const roleResult: any = await dbQuery(userRoleQuery, [dbResponse.user_id]);
 
       // use generateToken
-      const token = jwtUtil.generateToken(dbResponse);
-      logger.info('user : [' + username + '] successfully logged in');
-      return res.status(200).json({ token: token });
+      const accessToken  = jwtUtil.generateAccessToken(dbResponse.email);
+      logger.info('user : [' + email + '] successfully logged in');
+      return res.status(200).json({ accessToken: accessToken });
     } catch (error) {
         
-        logger.error("Error at signin function");
-        return res.status(500).json({ error: 'Failed to signin' });
+      logger.error("Error at signin function");
+      return next(error)
     }
     
 
@@ -78,13 +87,16 @@ export const signIn = async (
 
 
 export const getUserRoles = async (
- userId : string
+  userId: string
 ) => {
-
-    try {
+  try {
+    const getQuery = new queryList();
+    const userRoleQuery = getQuery.GET_USER_ROLE_QUERY;
+    const roleResult: any = await dbQuery(userRoleQuery, [userId]);
+    return roleResult.rows;
+  } catch (err) {
+    logger.error('Error : ' + err);
+    throw err;
+  }
         
-    } catch (error) {
-        
-    }
-
-};
+}   

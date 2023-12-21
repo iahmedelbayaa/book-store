@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "build": "tsc",
-    "test": "mocha --timeout 10000 "
+    "start": "tsc && node dist/server.js",
+    "dev": "tsc && concurrently \"tsc -w\" \"nodemon dist/server.js\"",
+    "build": "npm install && tsc"
   },
   "keywords": [],
   "author": "",

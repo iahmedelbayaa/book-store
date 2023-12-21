@@ -5,7 +5,8 @@ export const dbQuery = (queryText: string, queryParams?: any) => {
         pool.query(queryText, queryParams).then(res => {
             resolve(res);
         })
-        .catch(err => {
+            .catch((err: Error) => {
+            console.log('Error executing database query' , err.message);
             reject(err);
         });
     });

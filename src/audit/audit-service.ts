@@ -39,7 +39,7 @@ export function prepareAudit(
   let status = 200;
   if (error) status = 500;
 
-  const auditObj = new Audit(auditAction, data, status, error, auditBy, auditOn);
+  const auditObj: Audit = { auditAction, data, status, error, auditBy, auditOn };
 
   emitter.emit(auditEvent, auditObj);
 }
