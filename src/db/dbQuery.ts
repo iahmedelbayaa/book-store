@@ -23,6 +23,6 @@ export class queryList {
 
   SIGN_IN_QUERY: string = `SELECT ID, USERNAME, PASSWORD , EMAIL, FIRST_NAME, LAST_NAME, ACTIVE FROM BMS.USER WHERE LOWER(EMAIL) = LOWER($1) AND ACTIVE = 1`;
 
-  GET_USER_ROLE_QUERY: string = ``;
+  GET_USER_ROLE_QUERY: string = `SELECT "NAME" FROM BMS."ROLE"`;
   GET_USER_BY_EMAIL_QUERY: string = `SELECT u.ID as id, u.USERNAME as username, u.EMAIL as email, u.FIRST_NAME as firstName, u.LAST_NAME as lastName, u.ACTIVE as active,r.NAME as role FROM BMS.USER AS u JOIN BMS.ROLE as r ON u.ROLE_ID = r.ID WHERE LOWER(u.EMAIL) = LOWER($1) AND u.ACTIVE = 1`;
 }
