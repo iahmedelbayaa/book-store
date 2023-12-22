@@ -26,7 +26,7 @@ Ensure you have the following software installed on your system:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/iahmedelbayaa/book-app-adv.git
+   git clone https://github.com/iahmedelbayaa/book-store.git
    ```
 
    ## Installation
