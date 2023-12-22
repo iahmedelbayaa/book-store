@@ -28,27 +28,24 @@ export const saveStore = async (
     const createdBy = 'admin';
     const createdOn = new Date(Date.now()).toISOString();
     //req body
-    const storeName = req.body.storeName;
-    const storeCode = req.body.storeCode;
+    const name = req.body.name;
+    const code = req.body.code;
     const address = req.body.address;
     //check if is empty
-    if (!storeName || !address) {
-      return res.status(501).send({ error: 'empty' });
+    if (!name || !address) {
+      return res.status(501).json({ error: 'empty' });
     }
 
     //get new class
     const saveQuery = new queryList();
     // params
-    const values: any[] = [storeName, storeCode, address, createdOn, createdBy];
+    const values: any[] = [name, code, address, createdOn, createdBy];
     const SaveStoreQuery = saveQuery.SAVE_STORE_QUERY;
     //await to execute database query
     await dbQuery(SaveStoreQuery, values);
-
-    console.log(storeName, address);
-
-    return res.status(201).send('Successfully store Created');
+    return res.status(201).json('Successfully store Created');
   } catch (error) {
     console.log('Error' + error);
-    return res.status(500).send({ error: 'Failed to save Store' });
+    return res.status(500).json({ error: 'Failed to save Store' });
   }
 };

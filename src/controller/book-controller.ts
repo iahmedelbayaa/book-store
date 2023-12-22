@@ -53,21 +53,19 @@ export const getDetailsList = async (
   next: NextFunction
 ) => {
   try {
-    const bookId = parseInt(req.params.bookId);
-    // console.log("book Id :"+bookId);
-    
+    const Id = parseInt(req.params.Id);
     // validate not empty
-    if (bookId === null  || isNaN(bookId)) {
+    if (Id === null  || isNaN(Id)) {
       throw new APIError(
         ErrorType.API_ERROR,
         HttpStatusCode.INTERNAL_SERVER,
-        'Invalid BookId , is not a number , bookId is :' + bookId,
+        'Invalid BookId , is not a number , bookId is :' + Id,
         true
       );
     }
     const getQuery = new queryList();
     const bookDetailsQuery = getQuery.GET_BOOK_DETAILS_QUERY;
-    const result: any = await dbQuery(bookDetailsQuery, [bookId]);
+    const result: any = await dbQuery(bookDetailsQuery, [Id]);
     const book = result.rows[0];
     if (! book ) {
       return res.status(404).send({ error: 'Book not found' });
@@ -97,7 +95,7 @@ export const saveBook = async (
     const storeCode = req.body.storeCode;
     //check if is empty
     if (!title || !author || !publisher || !storeCode) {
-      return res.status(500).send({
+      return res.status(500).json({
         error:
           'title , author , publisher , storeCode are required , can not empty ',
       });
@@ -136,7 +134,7 @@ export const updateBook = async (
     const createdBy = 'admin';
     const createdOn = Date.now();
     //req body
-    const bookId = req.body.bookId;
+    const Id = req.body.Id;
     const title = req.body.title;
     const description = req.body.description;
     const author = req.body.author;
@@ -144,7 +142,7 @@ export const updateBook = async (
     const pages = req.body.pages;
     const storeCode = req.body.bookName;
     //check if is empty
-    if (!bookId || !title || !author || !publisher || !storeCode) {
+    if (!Id || !title || !author || !publisher || !storeCode) {
       return res.status(501).send({
         error:
           'book Id ,title , author , publisher , storeCode are required , can not empty ',
@@ -163,7 +161,7 @@ export const updateBook = async (
       storeCode,
       createdOn,
       createdBy,
-      bookId,
+      Id,
     ];
     const updateBookQuery = saveQuery.UPDATE_STORE_QUERY;
     //await to execute database query
@@ -181,22 +179,22 @@ export const deleteBook = async (
   res: Response,
   next: NextFunction
 ) => {
-  const bookId = req.params.bookId;
+  const Id = req.params.Id;
 
   try {
     // validate not empty
-    if (!bookId) {
+    if (!Id) {
       return res.status(500).send({ error: 'can not delete empty bookId' });
     }
     const deleteQuery = new queryList();
     const deleteBookQuery = deleteQuery.DELETE_BOOK_QUERY;
-    await dbQuery(deleteBookQuery, [bookId]);
+    await dbQuery(deleteBookQuery, [Id]);
 
     return res.status(200).send('Successfully book deleted ');
   } catch (err) {
     console.log('Error : ' + err);
     return res
       .status(500)
-      .send({ error: 'Failed to delete book with id : ' + bookId });
+      .send({ error: 'Failed to delete book with id : ' + Id });
   }
 };
